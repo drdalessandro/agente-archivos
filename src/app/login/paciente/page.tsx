@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
 import Header from "../../components/Header/header";
-import LoginForm from "../../components/LoginForm/loginform";
+import MedplumSignIn from "../../components/MedplumSignIn/medplumsignin";
 
 export default function LoginPaciente(): JSX.Element {
   return (
     <main className="container">
       <Header />
-      <LoginForm role="patient" titulo="Acceso Pacientes" />
+      <MedplumSignIn titulo="Acceso Pacientes" expectedRole="patient" />
     </main>
   );
 }

@@ -1,0 +1,26 @@
+.signInSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2f2f2;
+  min-height: 87vh;
+  padding: 1em;
+  border-radius: 10px;
+}
+
+.signInCard {
+  background-color: #fff;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 420px;
+}
+
+.signInTitle {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 1.2em;
+  text-align: center;
+}
