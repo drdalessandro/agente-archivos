@@ -31,7 +31,7 @@ const UploadDropZone = ({ selectedPatient, onUploadSuccess }: UploadProps) => {
             type: {
               coding: [
                 {
-                  system: "healthnut",
+                  system: "Agente-Archivos",
                   code: "pdf",
                   display: "Outpatient Note",
                 },
