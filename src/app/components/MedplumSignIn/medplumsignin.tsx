@@ -7,10 +7,10 @@ import { medplumBrowserClient } from "@/libs/medplumBrowserClient";
 import "./medplumsignin.css";
 
 const GOOGLE_CLIENT_ID =
-  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ??
-  "921088377005-3j1sa10vr6hj86jgmdfh2l53v3mp7lfi.apps.googleusercontent.com";
+  process.env.MEDPLUM_GOOGLE_CLIENT_ID ??
+  "472653584585-u2f6fefb1qck4mojs78nuq6mfht8uqht.apps.googleusercontent.com";
 
-const PROJECT_ID = process.env.NEXT_PUBLIC_MEDPLUM_PROJECT_ID;
+const PROJECT_ID = process.env.MEDPLUM_PROJECT_ID;
 
 interface MedplumSignInProps {
   titulo: string;
