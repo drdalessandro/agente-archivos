@@ -12,11 +12,12 @@ export default function Home(): JSX.Element {
 
   useEffect(() => {
     const cookies = parseClientCookies();
-    const medplumAccessToken = cookies.medplumAccessToken;
-    const medplumUserInfo = cookies.medplumUserInfo;
-
-    if (medplumAccessToken || medplumUserInfo) {
-      router.push("/Dashboard");
+    if (cookies.medplumAccessToken) {
+      if (cookies.medplumUserRole === "patient") {
+        router.push("/paciente/dashboard");
+      } else {
+        router.push("/Dashboard");
+      }
     }
   }, [router]);
 

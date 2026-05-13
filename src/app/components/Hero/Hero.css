@@ -28,17 +28,40 @@
   margin: 20px 0;
 }
 
-.start {
-  padding: 10px 20px;
+.roleButtons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  z-index: 5;
+  position: relative;
+}
+
+.roleBtn {
+  padding: 12px 28px;
   font-size: 1rem;
   font-weight: bold;
   color: #fff;
-  background-color: rgb(159, 207, 110);
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0,0,0, 0.3);
-  cursor: pointer !important;
-  z-index: 5;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.patientBtn {
+  background-color: rgb(159, 207, 110);
+}
+
+.patientBtn:hover {
+  background-color: rgb(139, 187, 90);
+}
+
+.professionalBtn {
+  background-color: rgb(80, 150, 200);
+}
+
+.professionalBtn:hover {
+  background-color: rgb(60, 130, 180);
 }
 
 .heroImage {

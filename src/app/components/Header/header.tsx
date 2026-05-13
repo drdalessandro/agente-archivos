@@ -11,40 +11,30 @@ import React from "react";
 export default function Header(): JSX.Element {
   const router = useRouter();
   const cookies = parseClientCookies();
-  const isLoggedIn = cookies.medplumAccessToken || cookies.medplumUserInfo;
-
-  const handleInviteClick = () => {
-    router.push("/Invite");
-  };
+  const isLoggedIn = !!cookies.medplumAccessToken;
 
   const handleLogout = () => {
     clearCookie('medplumAccessToken');
     clearCookie('medplumUserInfo');
-    router.push('/')
-  }
+    clearCookie('medplumUserRole');
+    clearCookie('medplumUserEmail');
+    clearCookie('medplumPatientId');
+    router.push('/');
+  };
 
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Image className="logo" src={logo} alt="Agente-Archivos Logo"></Image>
-        <h3 className="logoText">Agente-Archivos</h3>
+        <Image className="logo" src={logo} alt="Proyecto Mujer Logo"></Image>
+        <h3 className="logoText">Proyecto Mujer</h3>
       </div>
       <div className="navbar-right">
         <Link className="common" href="/">
-          Home
+          Inicio
         </Link>
-        {!isLoggedIn && (
-          <Link href="/Login" className="common">
-            Login
-          </Link>
-        )}
-        {isLoggedIn ? (
+        {isLoggedIn && (
           <button className="begin" onClick={handleLogout}>
-            Logout
-          </button>
-        ) : (
-          <button className="begin" onClick={handleInviteClick}>
-            Begin
+            Cerrar sesión
           </button>
         )}
       </div>

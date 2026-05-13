@@ -1,54 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Buffer } from "buffer";
 import { medplum } from "@/libs/medplumClient";
+import { parse } from "cookie";
 import config from "../../../../../config";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  // const code = searchParams.get("code");
-
-  // if (!code) {
-  //   return NextResponse.json(
-  //     { message: "Authorization code not provided." },
-  //     { status: 400 }
-  //   );
-  // } else {
-  //   console.log("Auth code is: ", code);
-  // }
-
   const tokenUrl = "https://api.medplum.com/oauth2/token";
   const clientId = process.env.MEDPLUM_CLIENT_ID;
   const clientSecret = process.env.MEDPLUM_CLIENT_SECRET;
-  const redirectUri = `${config.baseUrl}/api/auth/callback`;
-
-  // console.log("Received code:", code);
-  console.log("Using client ID:", clientId);
-  console.log("Using client Secret:", clientSecret);
-  // console.log("Using redirect URI:", redirectUri);
 
   if (!clientId || !clientSecret) {
     return NextResponse.json(
-      { message: "Client ID or Secret not provided." },
+      { message: "Client ID o Secret no configurados." },
       { status: 500 }
     );
   }
 
-  // Medplum documentation wants a basic auth
-  const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString(
-    "base64"
-  );
+  const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   const authorizationHeader = `Basic ${basicAuth}`;
-
-  console.log(authorizationHeader);
 
   const formData = new URLSearchParams();
   formData.append("grant_type", "client_credentials");
   formData.append("scope", "openid");
 
-  console.log("Form Data:", formData.toString());
-
   try {
-    // Exchange authorization code for access token
     const tokenResponse = await fetch(tokenUrl, {
       method: "POST",
       headers: {
@@ -59,11 +34,9 @@ export async function GET(req: NextRequest) {
     });
 
     const responseText = await tokenResponse.text();
-    console.log(responseText);
     if (!tokenResponse.ok) {
-      console.error("Error during token exchange:", responseText);
       return NextResponse.json(
-        { message: "Error during token exchange.", error: responseText },
+        { message: "Error al obtener token.", error: responseText },
         { status: tokenResponse.status }
       );
     }
@@ -72,31 +45,21 @@ export async function GET(req: NextRequest) {
     const accessToken = tokenData.access_token;
 
     if (!accessToken) {
-      throw new Error("Access token or Refresh Token is missing");
+      throw new Error("Access token no recibido");
     }
 
     await medplum.setAccessToken(accessToken);
 
-    const userInfoResponse = await fetch(
-      "https://api.medplum.com/oauth2/userinfo",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    const userInfoResponse = await fetch("https://api.medplum.com/oauth2/userinfo", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
-    if (!userInfoResponse.ok) {
-      const userInfoText = await userInfoResponse.text();
-      console.error("Error fetching user info:", userInfoText);
-      return NextResponse.json(
-        { message: "Error fetching user info.", error: userInfoText },
-        { status: userInfoResponse.status }
-      );
-    }
+    const userInfo = userInfoResponse.ok ? await userInfoResponse.json() : {};
 
-    const userInfo = await userInfoResponse.json();
-    console.log("User Info before cookie set: ", userInfo);
+    const cookieHeader = req.headers.get("cookie") || "";
+    const parsedCookies = parse(cookieHeader);
+    const loginRole = parsedCookies.medplumLoginRole || "professional";
+    const loginEmail = decodeURIComponent(parsedCookies.medplumLoginEmail || "");
 
     const cookieOptions = {
       maxAge: 30 * 24 * 60 * 60,
@@ -106,19 +69,62 @@ export async function GET(req: NextRequest) {
       httpOnly: false,
     };
 
+    if (loginRole === "patient") {
+      let patientId: string | undefined;
+
+      try {
+        const searchResult = await medplum.search("Patient", {
+          telecom: `email|${loginEmail}`,
+        });
+        const found = searchResult.entry?.[0]?.resource as any;
+        if (found?.id) {
+          patientId = found.id;
+        }
+      } catch (_) {
+        // search not available; patient dashboard will handle this
+      }
+
+      if (!patientId) {
+        try {
+          const projectId = process.env.MEDPLUM_PROJECT_ID;
+          const membersResult = await medplum.get(`admin/projects/${projectId}/members`);
+          const members: any[] = membersResult.entry?.map((e: any) => e.resource) ?? [];
+          const match = members.find(
+            (m) =>
+              m.user?.display === loginEmail ||
+              m.user?.identifier?.some((id: any) => id.value === loginEmail)
+          );
+          const ref: string = match?.profile?.reference ?? "";
+          if (ref.startsWith("Patient/")) {
+            patientId = ref.split("/")[1];
+          }
+        } catch (_) {
+          // admin endpoint not accessible; patient dashboard will show instructions
+        }
+      }
+
+      const response = NextResponse.redirect(`${config.baseUrl}/paciente/dashboard`);
+      response.cookies.set("medplumAccessToken", accessToken, cookieOptions);
+      response.cookies.set("medplumUserInfo", JSON.stringify(userInfo), cookieOptions);
+      response.cookies.set("medplumUserRole", "patient", cookieOptions);
+      response.cookies.set("medplumUserEmail", loginEmail, cookieOptions);
+      if (patientId) {
+        response.cookies.set("medplumPatientId", patientId, cookieOptions);
+      }
+      return response;
+    }
+
+    // Professional login
     const response = NextResponse.redirect(`${config.baseUrl}/Dashboard`);
     response.cookies.set("medplumAccessToken", accessToken, cookieOptions);
-    response.cookies.set(
-      "medplumUserInfo",
-      JSON.stringify(userInfo),
-      cookieOptions
-    );
-
+    response.cookies.set("medplumUserInfo", JSON.stringify(userInfo), cookieOptions);
+    response.cookies.set("medplumUserRole", "professional", cookieOptions);
+    response.cookies.set("medplumUserEmail", loginEmail, cookieOptions);
     return response;
   } catch (error) {
-    console.error("Error during OAuth callback:", error);
+    console.error("Error durante el callback de autenticación:", error);
     return NextResponse.json(
-      { message: "Error during OAuth callback.", error },
+      { message: "Error durante la autenticación.", error },
       { status: 500 }
     );
   }
