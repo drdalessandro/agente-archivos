@@ -1,5 +1,5 @@
 "use client";
-import logo from "../../images/healthnut_transparent.png";
+import logo from "../../images/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 import "./Header.css";
