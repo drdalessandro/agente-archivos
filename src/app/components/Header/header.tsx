@@ -26,8 +26,8 @@ export default function Header(): JSX.Element {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Image className="logo" src={logo} alt="Healthnut Logo"></Image>
-        <h3 className="logoText">Healthnut</h3>
+        <Image className="logo" src={logo} alt="Agente-Archivos Logo"></Image>
+        <h3 className="logoText">Agente-Archivos</h3>
       </div>
       <div className="navbar-right">
         <Link className="common" href="/">
