@@ -1,8 +1,8 @@
-# 🏥 HealthNut: A Medplum FHIR Demo Application
+# 🏥 EPA Bienestar IA: A Medplum FHIR Demo Application
 
 ## 🌟 Introduction
 
-HealthNut is a demonstration application showcasing the power and flexibility of Medplum, an open-source FHIR backend. This app is an example of an application that could improve post-visit care in healthcare settings by streamlining the process of creating and managing post-visit summaries. 
+"Agente-Archivos" is a demonstration application showcasing the power and flexibility of Medplum, an open-source FHIR backend. This app is an example of an application that could improve post-visit care in healthcare settings by streamlining the process of creating and managing post-visit summaries. 
 
 As a demo, HealthNut serves as a springboard for developers and healthcare organizations to build more extensive and specialized applications on top of Medplum's robust infrastructure.
 
@@ -27,16 +27,16 @@ Our application leverages a powerful and modern tech stack:
 - 🔥 **FHIR**: Ensuring healthcare data interoperability
 - 🏥 **Medplum**: A HIPAA-compliant backend for secure health data management
 
-## 🎯 Building on HealthNut
+## 🎯 Building
 
-HealthNut demonstrates key functionalities that can be expanded upon:
+Demonstrates key functionalities that can be expanded upon:
 
 1. 📊 **Patient Data Management**: Showcases basic patient profile handling, extendable to comprehensive patient records.
 2. 🗃️ **Document Handling**: Illustrates document upload and retrieval, scalable to full document management systems.
 3. 🎙️ **Voice Integration**: Demonstrates voice note capabilities, expandable to advanced voice recognition and NLP features.
 4. 🔍 **Search and Retrieval**: Shows basic search functionality, extendable to complex querying and data analytics.
 
-Developers can use HealthNut as a reference to understand Medplum's capabilities and as a starting point for building more complex, feature-rich healthcare applications.
+Developers can use as a reference to understand Medplum's capabilities and as a starting point for building more complex, feature-rich healthcare applications.
 
 ## 🔨 Room for Improvement
 
@@ -64,4 +64,4 @@ While HealthNut is a powerful demo, there's always room for enhancement:
 
 ---
 
-I'm going to continue to improve HealthNut and welcome contributions from the community. Together, we can make healthcare documentation more efficient and effective! 🌟
+I'm going to continue to improve and welcome contributions from the community. Together, we can make healthcare documentation more efficient and effective! 🌟
