@@ -4,7 +4,7 @@
 
 "Agente-Archivos" is a demonstration application showcasing the power and flexibility of Medplum, an open-source FHIR backend. This app is an example of an application that could improve post-visit care in healthcare settings by streamlining the process of creating and managing post-visit summaries. 
 
-As a demo, HealthNut serves as a springboard for developers and healthcare organizations to build more extensive and specialized applications on top of Medplum's robust infrastructure.
+As a demo, EPA serves as a springboard for developers and healthcare organizations to build more extensive and specialized applications on top of Medplum's robust infrastructure.
 
 ## 🚀 Why Medplum?
 
@@ -40,7 +40,7 @@ Developers can use as a reference to understand Medplum's capabilities and as a 
 
 ## 🔨 Room for Improvement
 
-While HealthNut is a powerful demo, there's always room for enhancement:
+While EPA Agente-Archivos is a powerful demo, there's always room for enhancement:
 
 1. 🔐 **Authentication Upgrade**: 
    - Current: Using client credentials for authentication.
