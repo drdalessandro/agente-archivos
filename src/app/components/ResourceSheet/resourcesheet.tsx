@@ -125,7 +125,7 @@ const fetchPatientResources = async (patientId: string) => {
                     }
                   >
                     <span className="patient-name">
-                      {patient.name[0].given[0]} {patient.name[0].family}
+                      {patient.name?.[0]?.given?.[0]} {patient.name?.[0]?.family}
                     </span>
                   </li>
                 ))}
