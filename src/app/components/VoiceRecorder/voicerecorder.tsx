@@ -97,7 +97,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
    type: {
      coding: [
        {
-         system: "healthnut",
+         system: "Agente-Archivos",
          code: "voice-recording",
          display: "Voice Recording",
        },
