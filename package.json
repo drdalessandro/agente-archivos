@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@azure/openai": "^1.0.0-beta.12",
+    "@mantine/core": "^7.17.8",
+    "@mantine/hooks": "^7.17.8",
+    "@mantine/notifications": "^7.17.8",
     "@medplum/core": "^3.1.8",
+    "@medplum/react": "^3.1.8",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
     "buffer": "^6.0.3",
@@ -22,7 +26,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
-    "react-loading-skeleton": "^3.4.0"
+    "react-loading-skeleton": "^3.4.0",
+    "rfc6902": "^5.2.0"
   },
   "devDependencies": {
     "@types/node": "^20",

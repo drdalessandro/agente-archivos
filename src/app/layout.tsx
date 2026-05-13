@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import { ThemeProvider } from "./components/ThemeProviders";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import "./globals.css";
 
 const inter = IBM_Plex_Sans({ weight: "400", subsets: ["latin"] });
