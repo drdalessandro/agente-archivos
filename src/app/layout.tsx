@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = IBM_Plex_Sans({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Healthnut",
+  title: "Agente-Archivos",
   description: "Post visit summarizer for physicians and patients",
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={inter.className || ""}>
         <ThemeProvider defaultTheme="root">{children}</ThemeProvider>
       </body>
