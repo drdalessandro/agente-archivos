@@ -27,7 +27,7 @@ const PatientForm = ({ onCreatePatient }: PatientFormProps) => {
         ],
         identifier: [
           {
-            system: "healthnut",
+            system: "Agente-Archivos",
             value: `${firstName}-${lastName}`,
           },
         ],
