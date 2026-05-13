@@ -1,29 +1,45 @@
 import React, { useCallback } from "react";
 import { Cloud } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import * as Toast from "@radix-ui/react-toast";
 import "./uploaddropzone.css";
 import { medplum } from "@/libs/medplumClient";
 import { Patient } from "@/libs/types";
 
 interface UploadProps {
   selectedPatient: Patient | null;
-  onUploadSuccess: () => void
+  patientId?: string;
+  onUploadSuccess: () => void;
 }
 
-const UploadDropZone = ({ selectedPatient, onUploadSuccess }: UploadProps) => {
+function sanitizeFileName(name: string): string {
+  const lastDot = name.lastIndexOf(".");
+  const ext = lastDot >= 0 ? name.slice(lastDot).toLowerCase() : "";
+  const base = lastDot >= 0 ? name.slice(0, lastDot) : name;
+  return (
+    base
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_-]/g, "") + ext
+  );
+}
+
+const UploadDropZone = ({ selectedPatient, patientId, onUploadSuccess }: UploadProps) => {
+  const effectivePatientId = patientId ?? selectedPatient?.id ?? null;
+
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      if (!selectedPatient) {
-        console.error("No patient selected");
+      if (!effectivePatientId) {
+        console.error("No hay paciente seleccionado");
         return;
       }
 
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
+        const sanitized = sanitizeFileName(file.name);
+        const renamedFile = new File([file], sanitized, { type: file.type });
+
         try {
-          const binary = await medplum.createBinary(file, file.name, file.type);
-          console.log(binary);
+          const binary = await medplum.createBinary(renamedFile, sanitized, renamedFile.type);
 
           await medplum.createResource({
             resourceType: "DocumentReference",
@@ -38,13 +54,13 @@ const UploadDropZone = ({ selectedPatient, onUploadSuccess }: UploadProps) => {
               ],
               text: "PDF Document",
             },
-            subject: { reference: `Patient/${selectedPatient.id}` },
+            subject: { reference: `Patient/${effectivePatientId}` },
             content: [
               {
                 attachment: {
-                  contentType: file.type,
+                  contentType: renamedFile.type,
                   url: `Binary/${binary.id}`,
-                  title: file.name,
+                  title: sanitized,
                   creation: new Date().toISOString(),
                 },
               },
@@ -52,38 +68,35 @@ const UploadDropZone = ({ selectedPatient, onUploadSuccess }: UploadProps) => {
             description: "Patient PDF Document",
           });
 
-          console.log("File uploaded successfully");
-          onUploadSuccess()
+          onUploadSuccess();
         } catch (error) {
-          console.error("Error uploading file:", error);
-          // You can add a toast notification here to inform the user of the error
+          console.error("Error al subir el archivo:", error);
         }
       }
     },
-    [selectedPatient, onUploadSuccess]
+    [effectivePatientId, onUploadSuccess]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxSize: 4 * 1024 * 1024,
+    accept: { "application/pdf": [".pdf"] },
+    disabled: !effectivePatientId,
   });
 
   return (
-    <Toast.Provider swipeDirection="right">
-      <div className="dropzone-container" {...getRootProps()}>
-        <input {...getInputProps()} />
-        <div className="dropzone-inner">
-          <div className="dropzone-content">
-            <Cloud className="dropzone-icon" />
-            <p className="dropzone-text">
-              <span className="dz-text-bold">Click to upload</span> or drag and
-              drop patient related PDFs
-            </p>
-            <p className="dz-subtext">(Up to 4MB)</p>
-          </div>
+    <div className="dropzone-container" {...getRootProps()}>
+      <input {...getInputProps()} />
+      <div className="dropzone-inner">
+        <div className="dropzone-content">
+          <Cloud className="dropzone-icon" />
+          <p className="dropzone-text">
+            <span className="dz-text-bold">Clic para subir</span> o arrastrá un PDF aquí
+          </p>
+          <p className="dz-subtext">(Solo PDF, máximo 4MB)</p>
         </div>
       </div>
-    </Toast.Provider>
+    </div>
   );
 };
 

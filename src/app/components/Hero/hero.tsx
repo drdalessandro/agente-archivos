@@ -10,19 +10,24 @@ import { useRouter } from "next/navigation";
 
 export default function Hero(): JSX.Element {
   const router = useRouter();
-  const handleInviteClick = () => {
-    router.push('/Invite')
-  }
+
   return (
     <section className="heroSection">
       <div className="heroContent">
-        <h1>Streamline Post-Visits, Amplify Patient Care</h1>
-        <p>Reclaim your time. Enhance your EHR experience.</p>
-        <Image className="stethoImage" src={stetho} alt="stethoscope"></Image>
-        <button onClick={handleInviteClick} className="start">Let&apos;s get started!</button>
+        <h1>Bienvenida a Proyecto Mujer</h1>
+        <p>Seleccioná cómo querés ingresar</p>
+        <Image className="stethoImage" src={stetho} alt="estetoscopio"></Image>
+        <div className="roleButtons">
+          <button onClick={() => router.push('/login/paciente')} className="roleBtn patientBtn">
+            Soy Paciente
+          </button>
+          <button onClick={() => router.push('/login/profesional')} className="roleBtn professionalBtn">
+            Soy Profesional
+          </button>
+        </div>
       </div>
       <div className="heroImage">
-        <Image src={doctor} alt="Doctor" />
+        <Image src={doctor} alt="Profesional de salud" />
       </div>
     </section>
   );

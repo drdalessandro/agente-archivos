@@ -3,7 +3,12 @@ import "./loginform.css";
 import { useRouter } from "next/navigation";
 import { medplum } from "@/libs/medplumClient";
 
-const LoginForm = (): JSX.Element => {
+interface LoginFormProps {
+  role: "patient" | "professional";
+  titulo: string;
+}
+
+const LoginForm = ({ role, titulo }: LoginFormProps): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -11,43 +16,47 @@ const LoginForm = (): JSX.Element => {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
 
     try {
-      const loginResponse = await medplum.startLogin({
-        email,
-        password,
-      });
+      document.cookie = `medplumLoginEmail=${encodeURIComponent(email)}; path=/; samesite=strict`;
+      document.cookie = `medplumLoginRole=${role}; path=/; samesite=strict`;
+
+      const loginResponse = await medplum.startLogin({ email, password });
 
       if (loginResponse.code) {
         router.push(`/api/auth/callback`);
       }
     } catch (err) {
       console.error("Error logging in:", err);
-      setError("Invalid email or password");
+      setError("Email o contraseña incorrectos");
     }
   }
 
   return (
     <section className="loginSection">
       <form className="loginForm" onSubmit={handleSubmit}>
-        <label> Email:</label>
+        <h2 className="loginTitle">{titulo}</h2>
+        <label>Email:</label>
         <input
           type="email"
           value={email}
-          placeholder="Email Address"
+          placeholder="Dirección de email"
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
-        <label>Password:</label>
+        <label>Contraseña:</label>
         <input
           type="password"
           value={password}
-          placeholder="Password"
+          placeholder="Contraseña"
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
-        {error && <p>{error}</p>}
-        <button type="submit">Login</button>
+        {error && <p className="loginError">{error}</p>}
+        <button type="submit">Ingresar</button>
       </form>
     </section>
   );
