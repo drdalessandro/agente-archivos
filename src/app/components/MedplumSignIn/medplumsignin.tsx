@@ -8,7 +8,7 @@ import "./medplumsignin.css";
 
 const GOOGLE_CLIENT_ID =
   process.env.MEDPLUM_GOOGLE_CLIENT_ID ??
-  "472653584585-u2f6fefb1qck4mojs78nuq6mfht8uqht.apps.googleusercontent.com";
+  "472653584585-ea2njlto3v9ot9hrc4nvi94j7q6sitcf.apps.googleusercontent.com";
 
 const PROJECT_ID = process.env.MEDPLUM_PROJECT_ID;
 
