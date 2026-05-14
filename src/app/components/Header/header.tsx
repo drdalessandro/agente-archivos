@@ -25,7 +25,7 @@ export default function Header(): JSX.Element {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Image className="logo" src={logo} alt="Proyecto Mujer Logo"></Image>
+        <Image className="logo" src={logo} alt="Proyecto Archivos Logo"></Image>
         <h3 className="logoText">Archivos</h3>
       </div>
       <div className="navbar-right">
