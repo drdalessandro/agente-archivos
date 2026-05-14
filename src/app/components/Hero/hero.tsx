@@ -14,7 +14,7 @@ export default function Hero(): JSX.Element {
   return (
     <section className="heroSection">
       <div className="heroContent">
-        <h1>Bienvenida a Proyecto Mujer</h1>
+        <h1>Bienvenida a Proyecto Archivos</h1>
         <p>Seleccioná cómo querés ingresar</p>
         <Image className="stethoImage" src={stetho} alt="estetoscopio"></Image>
         <div className="roleButtons">
