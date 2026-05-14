@@ -2,7 +2,7 @@
 
 import React from "react";
 import "./Hero.css";
-import doctor from "../../images/doctor_hero.png";
+import doctor from "../../images/archivos.jpg";
 import stetho from "../../images/stetho.png"
 import Image from "next/image";
 import { useRouter } from "next/navigation";
