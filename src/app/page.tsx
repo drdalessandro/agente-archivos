@@ -1,11 +1,8 @@
 "use client";
 
-import React from "react";
-import Header from "./components/Header/header";
-import Hero from "./components/Hero/hero";
-import { parseClientCookies } from "@/libs/cookies";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { parseClientCookies } from "@/libs/cookies";
 
 export default function Home(): JSX.Element {
   const router = useRouter();
@@ -14,17 +11,14 @@ export default function Home(): JSX.Element {
     const cookies = parseClientCookies();
     if (cookies.medplumAccessToken) {
       if (cookies.medplumUserRole === "patient") {
-        router.push("/paciente/dashboard");
+        router.replace("/paciente/dashboard");
       } else {
-        router.push("/Dashboard");
+        router.replace("/Dashboard");
       }
+    } else {
+      router.replace("/login");
     }
   }, [router]);
 
-  return (
-    <main className="container">
-      <Header />
-      <Hero />
-    </main>
-  );
+  return <></>;
 }

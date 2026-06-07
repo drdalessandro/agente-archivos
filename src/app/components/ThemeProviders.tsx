@@ -1,26 +1,28 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { MedplumProvider } from "@medplum/react";
 import { medplumBrowserClient } from "@/libs/medplumBrowserClient";
+import { useRouter } from "next/navigation";
 
 interface ThemeProviderProps {
   children: ReactNode;
-  defaultTheme: string;
 }
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  const router = useRouter();
+
   return (
-    <NextThemesProvider {...props}>
-      <MantineProvider>
-        <Notifications />
-        <MedplumProvider medplum={medplumBrowserClient}>
-          {children}
-        </MedplumProvider>
-      </MantineProvider>
-    </NextThemesProvider>
+    <MantineProvider>
+      <Notifications />
+      <MedplumProvider
+        medplum={medplumBrowserClient}
+        navigate={(path) => router.push(path)}
+      >
+        {children}
+      </MedplumProvider>
+    </MantineProvider>
   );
 }
