@@ -1,6 +1,5 @@
 "use client";
-import logo from "../../images/logo.png";
-import Image from "next/image";
+import { Logo } from "@medplum/react";
 import Link from "next/link";
 import "./Header.css";
 import { useRouter } from "next/navigation";
@@ -25,7 +24,7 @@ export default function Header(): JSX.Element {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Image className="logo" src={logo} alt="Proyecto Archivos Logo"></Image>
+        <Logo size={32} />
         <h3 className="logoText">Archivos</h3>
       </div>
       <div className="navbar-right">
