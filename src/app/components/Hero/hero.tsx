@@ -14,14 +14,14 @@ export default function Hero(): JSX.Element {
   return (
     <section className="heroSection">
       <div className="heroContent">
-        <h1>Bienvenida a Proyecto Archivos</h1>
+        <h1>Proyecto Favaloro | Medplum Argentina</h1>
         <p>Seleccioná cómo querés ingresar</p>
         <Image className="stethoImage" src={stetho} alt="estetoscopio"></Image>
         <div className="roleButtons">
-          <button onClick={() => router.push('/login/paciente')} className="roleBtn patientBtn">
+          <button onClick={() => router.push('/login')} className="roleBtn patientBtn">
             Soy Paciente
           </button>
-          <button onClick={() => router.push('/login/profesional')} className="roleBtn professionalBtn">
+          <button onClick={() => router.push('/login')} className="roleBtn professionalBtn">
             Soy Profesional
           </button>
         </div>

@@ -27,7 +27,7 @@ const PatientForm = ({ onCreatePatient }: PatientFormProps) => {
         ],
         identifier: [
           {
-            system: "Agente-Archivos",
+            system: "https://medplum.com.ar",
             value: `${firstName}-${lastName}`,
           },
         ],

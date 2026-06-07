@@ -9,8 +9,8 @@ import "./globals.css";
 const ibmPlex = IBM_Plex_Sans({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "EPA Bienestar IA",
-  description: "Portal de documentos médicos",
+  title: "Proyecto Favaloro | Medplum Argentina",
+  description: "Portal de documentos médicos — Medplum Argentina",
 };
 
 export default function RootLayout({

@@ -97,7 +97,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
    type: {
      coding: [
        {
-         system: "Agente-Archivos",
+         system: "https://medplum.com.ar",
          code: "voice-recording",
          display: "Voice Recording",
        },
