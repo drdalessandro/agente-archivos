@@ -1,3 +1,79 @@
+/* ── Wrapper ── */
+.dz-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Type selector (profesional) ── */
+.dz-typeSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.dz-typeLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.dz-typeSelect {
+  padding: 0.5em 0.75em;
+  border: 1.5px solid #ddd;
+  border-radius: 7px;
+  font-size: 0.88rem;
+  color: #333;
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.dz-typeSelect:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.dz-typeSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Feedback messages ── */
+.dz-msg {
+  font-size: 0.82rem;
+  border-radius: 6px;
+  padding: 0.35em 0.75em;
+  margin: 0;
+}
+
+.dz-ok {
+  color: #1e7e4e;
+  background: #eafaf1;
+  border: 1px solid #b7dfcb;
+}
+
+.dz-err {
+  color: #b5270f;
+  background: #fdecea;
+  border: 1px solid #f5c6c1;
+}
+
+/* ── States ── */
+.dropzone-container.dz-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.dropzone-container.dz-active {
+  border-color: #2c7be5;
+  background: #f0f7ff;
+}
+
+/* ── Base ── */
 .dropzone-container {
   border: 1px dashed #d1d5db;
   height: 100%;
@@ -51,4 +127,11 @@
 .dz-subtext {
   font-size: 0.75rem;
   color: #6b7280;
+}
+
+.dropzone-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
 }

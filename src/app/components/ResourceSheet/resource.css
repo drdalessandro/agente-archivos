@@ -201,6 +201,93 @@
   color: #3498db;
 }
 
+/* ── Document list (ResourceSheet) ── */
+.rs-empty {
+  color: #aaa;
+  font-style: italic;
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.rs-docList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rs-docItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  background-color: #f1f3f5;
+  padding: 0.65em 0.8em;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.rs-docItem:hover {
+  background-color: #e9ecef;
+}
+
+.rs-docIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.rs-docInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05em;
+  min-width: 0;
+}
+
+.rs-docTitle {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rs-docType {
+  font-size: 0.75rem;
+  color: #3498db;
+  font-weight: 500;
+}
+
+.rs-docDate {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+.rs-viewBtn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1.5px solid #3498db;
+  border-radius: 5px;
+  color: #3498db;
+  padding: 0.3em 0.5em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.rs-viewBtn:hover:not(:disabled) {
+  background: #3498db;
+  color: #fff;
+}
+
+.rs-viewBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* Scrollbar styles */
 .resourcesColumns::-webkit-scrollbar,
 .patient-list::-webkit-scrollbar {

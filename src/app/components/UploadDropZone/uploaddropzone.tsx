@@ -1,9 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Cloud } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import "./uploaddropzone.css";
 import { medplum } from "@/libs/medplumClient";
 import { Patient } from "@/libs/types";
+import { DOCUMENT_TYPES, LOINC_SYSTEM } from "@/libs/documentTypes";
+
+const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
 
 interface UploadProps {
   selectedPatient: Patient | null;
@@ -25,77 +28,123 @@ function sanitizeFileName(name: string): string {
 
 const UploadDropZone = ({ selectedPatient, patientId, onUploadSuccess }: UploadProps) => {
   const effectivePatientId = patientId ?? selectedPatient?.id ?? null;
+  const [selectedDocType, setSelectedDocType] = useState<string>("");
+  const [uploadMsg, setUploadMsg] = useState("");
+  const [uploadError, setUploadError] = useState("");
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
-      if (!effectivePatientId) {
-        console.error("No hay paciente seleccionado");
+    async (acceptedFiles: File[], rejectedFiles: any[]) => {
+      setUploadMsg("");
+      setUploadError("");
+
+      if (rejectedFiles.length > 0) {
+        const err = rejectedFiles[0]?.errors?.[0];
+        if (err?.code === "file-too-large") {
+          setUploadError("El archivo supera el límite de 20 MB.");
+        } else {
+          setUploadError("Solo se aceptan archivos PDF.");
+        }
         return;
       }
 
-      if (acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
-        const sanitized = sanitizeFileName(file.name);
-        const renamedFile = new File([file], sanitized, { type: file.type });
+      if (!effectivePatientId || acceptedFiles.length === 0) return;
 
-        try {
-          const binary = await medplum.createBinary(renamedFile, sanitized, renamedFile.type);
+      const file = acceptedFiles[0];
+      const sanitized = sanitizeFileName(file.name);
+      const renamedFile = new File([file], sanitized, { type: file.type });
+      const docType = DOCUMENT_TYPES.find((t) => t.code === selectedDocType)!;
 
-          await medplum.createResource({
-            resourceType: "DocumentReference",
-            status: "current",
-            type: {
-              coding: [
-                {
-                  system: "Agente-Archivos",
-                  code: "pdf",
-                  display: "Outpatient Note",
-                },
-              ],
-              text: "PDF Document",
-            },
-            subject: { reference: `Patient/${effectivePatientId}` },
-            content: [
+      setUploadMsg("Subiendo...");
+      try {
+        const binary = await medplum.createBinary(renamedFile, sanitized, renamedFile.type);
+
+        await medplum.createResource({
+          resourceType: "DocumentReference",
+          status: "current",
+          type: {
+            coding: [
               {
-                attachment: {
-                  contentType: renamedFile.type,
-                  url: `Binary/${binary.id}`,
-                  title: sanitized,
-                  creation: new Date().toISOString(),
-                },
+                system: LOINC_SYSTEM,
+                code: docType.code,
+                display: docType.display,
               },
             ],
-            description: "Patient PDF Document",
-          });
+            text: docType.display,
+          },
+          subject: { reference: `Patient/${effectivePatientId}` },
+          content: [
+            {
+              attachment: {
+                contentType: renamedFile.type,
+                url: `Binary/${binary.id}`,
+                title: sanitized,
+                creation: new Date().toISOString(),
+              },
+            },
+          ],
+          description: docType.display,
+        });
 
-          onUploadSuccess();
-        } catch (error) {
-          console.error("Error al subir el archivo:", error);
-        }
+        setUploadMsg("Documento subido correctamente.");
+        setSelectedDocType("");
+        onUploadSuccess();
+      } catch (_) {
+        setUploadError("Error al subir el archivo. Intentá nuevamente.");
+        setUploadMsg("");
       }
     },
-    [effectivePatientId, onUploadSuccess]
+    [effectivePatientId, selectedDocType, onUploadSuccess]
   );
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxSize: 4 * 1024 * 1024,
+    maxSize: MAX_FILE_SIZE_BYTES,
     accept: { "application/pdf": [".pdf"] },
-    disabled: !effectivePatientId,
+    disabled: !effectivePatientId || !selectedDocType,
+    multiple: false,
   });
 
   return (
-    <div className="dropzone-container" {...getRootProps()}>
-      <input {...getInputProps()} />
-      <div className="dropzone-inner">
-        <div className="dropzone-content">
-          <Cloud className="dropzone-icon" />
-          <p className="dropzone-text">
-            <span className="dz-text-bold">Clic para subir</span> o arrastrá un PDF aquí
-          </p>
-          <p className="dz-subtext">(Solo PDF, máximo 4MB)</p>
+    <div className="dz-wrapper">
+      <div className="dz-typeSelector">
+        <label className="dz-typeLabel">Tipo de documento</label>
+        <select
+          className="dz-typeSelect"
+          value={selectedDocType}
+          onChange={(e) => {
+            setSelectedDocType(e.target.value);
+            setUploadMsg("");
+            setUploadError("");
+          }}
+          disabled={!effectivePatientId}
+        >
+          <option value="">— Seleccioná un tipo —</option>
+          {DOCUMENT_TYPES.map((t) => (
+            <option key={t.code} value={t.code}>
+              {t.icon} {t.display}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div
+        className={`dropzone-container${!effectivePatientId || !selectedDocType ? " dz-disabled" : ""}${isDragActive ? " dz-active" : ""}`}
+        {...getRootProps()}
+      >
+        <input {...getInputProps()} />
+        <div className="dropzone-inner">
+          <div className="dropzone-content">
+            <Cloud className="dropzone-icon" />
+            <p className="dropzone-text">
+              <span className="dz-text-bold">Clic para subir</span> o arrastrá un PDF aquí
+            </p>
+            <p className="dz-subtext">(Solo PDF · máximo 20 MB)</p>
+          </div>
         </div>
       </div>
+
+      {uploadMsg && <p className="dz-msg dz-ok">{uploadMsg}</p>}
+      {uploadError && <p className="dz-msg dz-err">{uploadError}</p>}
     </div>
   );
 };
