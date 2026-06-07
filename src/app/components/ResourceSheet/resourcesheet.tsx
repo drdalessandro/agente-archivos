@@ -3,6 +3,8 @@ import "../../Dashboard/dashboard.css";
 import { Patient } from "@/libs/types";
 import "./resource.css";
 import { medplum } from "@/libs/medplumClient";
+import { getDocumentType } from "@/libs/documentTypes";
+import { Download } from "lucide-react";
 
 interface ResourceSheetProps {
   patients: Patient[];
@@ -24,64 +26,67 @@ const ResourceSheet: React.FC<ResourceSheetProps> = ({
     documentReferences: any[];
     voiceRecordings: any[];
   }>({ documentReferences: [], voiceRecordings: [] });
+  const [downloading, setDownloading] = useState<string | null>(null);
 
-useEffect(() => {
-  if (switchToResourceTab && selectedPatient) {
-    setActiveTab("resource");
-  } else if (patients.length === 1) {
-    setSelectedPatient(patients[0]);
-    setActiveTab("resource");
-  } else if (patients.length === 0) {
-    setSelectedPatient(null);
-    setActiveTab("list");
-  }
-}, [patients, setSelectedPatient, switchToResourceTab, selectedPatient]);
+  useEffect(() => {
+    if (switchToResourceTab && selectedPatient) {
+      setActiveTab("resource");
+    } else if (patients.length === 1) {
+      setSelectedPatient(patients[0]);
+      setActiveTab("resource");
+    } else if (patients.length === 0) {
+      setSelectedPatient(null);
+      setActiveTab("list");
+    }
+  }, [patients, setSelectedPatient, switchToResourceTab, selectedPatient]);
 
   useEffect(() => {
     const fetchResources = async () => {
       if (selectedPatient) {
-        const patientResources = await fetchPatientResources(
-          selectedPatient.id!
-        );
+        const patientResources = await fetchPatientResources(selectedPatient.id!);
         setResources(patientResources);
       }
     };
-
     fetchResources();
   }, [selectedPatient, triggerRefetch]);
 
-const fetchPatientResources = async (patientId: string) => {
-  try {
-    // Fetch all DocumentReferences for the patient
-    const allDocumentReferencesResult = await medplum.search(
-      "DocumentReference",
-      {
+  const fetchPatientResources = async (patientId: string) => {
+    try {
+      const allDocumentReferencesResult = await medplum.search("DocumentReference", {
         subject: `Patient/${patientId}`,
-      }
-    );
+      });
 
-    const allDocumentReferences = allDocumentReferencesResult.entry
-      ? allDocumentReferencesResult.entry.map((entry: any) => entry.resource)
-      : [];
+      const all = allDocumentReferencesResult.entry
+        ? allDocumentReferencesResult.entry.map((entry: any) => entry.resource)
+        : [];
 
-    //@ts-ignore
-    const documentReferences = allDocumentReferences.filter((doc) =>
-      doc.type?.coding?.some((coding: any) => coding.code === "pdf")
-    );
-    //@ts-ignore
-    const voiceRecordings = allDocumentReferences.filter((doc) =>
-      doc.type?.coding?.some((coding: any) => coding.code === "voice-recording")
-    );
+      const documentReferences = all.filter(
+        (doc: any) => doc.content?.[0]?.attachment?.contentType === "application/pdf"
+      );
 
-    return {
-      documentReferences,
-      voiceRecordings,
-    };
-  } catch (error) {
-    console.error("Error fetching patient resources:", error);
-    return { documentReferences: [], voiceRecordings: [] };
-  }
-};
+      const voiceRecordings = all.filter((doc: any) =>
+        doc.content?.[0]?.attachment?.contentType?.startsWith("audio/")
+      );
+
+      return { documentReferences, voiceRecordings };
+    } catch (error) {
+      console.error("Error fetching patient resources:", error);
+      return { documentReferences: [], voiceRecordings: [] };
+    }
+  };
+
+  const handleViewPdf = async (binaryUrl: string, docId: string) => {
+    setDownloading(docId);
+    try {
+      const blob = await medplum.download(binaryUrl);
+      const objectUrl = URL.createObjectURL(blob);
+      window.open(objectUrl, "_blank");
+    } catch (_) {
+      alert("No se pudo abrir el documento.");
+    } finally {
+      setDownloading(null);
+    }
+  };
 
   const selectPatient = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -109,20 +114,17 @@ const fetchPatientResources = async (patientId: string) => {
           Patient Resources
         </button>
       </div>
+
       <div className="tab-content">
         {activeTab === "list" && (
-          <div
-            className={`patient-list ${patients.length === 0 ? "empty" : ""}`}
-          >
+          <div className={`patient-list ${patients.length === 0 ? "empty" : ""}`}>
             {patients.length > 0 ? (
               <ul>
                 {patients.map((patient) => (
                   <li
                     key={patient.id}
                     onClick={() => selectPatient(patient)}
-                    className={
-                      selectedPatient?.id === patient.id ? "active" : ""
-                    }
+                    className={selectedPatient?.id === patient.id ? "active" : ""}
                   >
                     <span className="patient-name">
                       {patient.name?.[0]?.given?.[0]} {patient.name?.[0]?.family}
@@ -135,35 +137,56 @@ const fetchPatientResources = async (patientId: string) => {
             )}
           </div>
         )}
+
         {activeTab === "resource" && selectedPatient && (
           <div>
-            <h3 className="resource_ptname">Patient: {patientName}</h3>
+            <h3 className="resource_ptname">Paciente: {patientName}</h3>
             <div className="resourcesColumns">
               <div className="column pdf-column">
-                <h4>PDFs</h4>
-                <ul>
-                  {resources.documentReferences.map(
-                    (file: any, index: number) => (
-                      <li key={index}>
-                        <a
-                          href={file.content[0].attachment.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={
-                            file.content[0].attachment.title ||
-                            `File ${index + 1}`
-                          }
-                        >
-                          {file.content[0].attachment.title ||
-                            `File ${index + 1}`}
-                        </a>
-                      </li>
-                    )
-                  )}
-                </ul>
+                <h4>Documentos médicos</h4>
+                {resources.documentReferences.length === 0 ? (
+                  <p className="rs-empty">Sin documentos</p>
+                ) : (
+                  <ul className="rs-docList">
+                    {resources.documentReferences.map((file: any, index: number) => {
+                      const coding = file.type?.coding?.[0];
+                      const tipo = getDocumentType(coding?.code ?? "");
+                      const binaryUrl = file.content?.[0]?.attachment?.url ?? "";
+                      const title = file.content?.[0]?.attachment?.title ?? `Archivo ${index + 1}`;
+                      const dateRaw = file.content?.[0]?.attachment?.creation;
+                      const date = dateRaw
+                        ? new Date(dateRaw).toLocaleDateString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
+                        : "";
+
+                      return (
+                        <li key={index} className="rs-docItem">
+                          <span className="rs-docIcon">{tipo.icon}</span>
+                          <div className="rs-docInfo">
+                            <span className="rs-docTitle">{title}</span>
+                            <span className="rs-docType">{tipo.display}</span>
+                            {date && <span className="rs-docDate">{date}</span>}
+                          </div>
+                          <button
+                            className="rs-viewBtn"
+                            onClick={() => handleViewPdf(binaryUrl, file.id ?? String(index))}
+                            disabled={downloading === (file.id ?? String(index))}
+                            title="Ver PDF"
+                          >
+                            <Download size={14} />
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
+
               <div className="column audio-column">
-                <h4>Voice Recordings</h4>
+                <h4>Grabaciones de voz</h4>
                 <ul>
                   {resources.voiceRecordings.map((file: any, index: number) => (
                     <li key={index}>
@@ -172,8 +195,7 @@ const fetchPatientResources = async (patientId: string) => {
                           src={file.content[0].attachment.url}
                           type="audio/webm"
                         />
-                        {file.content[0].attachment.title ||
-                          `Recording ${index + 1}`}
+                        {file.content[0].attachment.title || `Grabación ${index + 1}`}
                       </audio>
                     </li>
                   ))}
