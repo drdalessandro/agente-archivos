@@ -47,7 +47,6 @@ export default function LoginPage() {
         <SignInForm
           projectId={PROJECT_ID}
           onSuccess={handleSuccess}
-          disableGoogleAuth
         />
       </div>
     </div>
