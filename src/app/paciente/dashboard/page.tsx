@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import { Cloud, FileText, Download } from "lucide-react";
-import Header from "../../components/Header/header";
+import { MedplumAppShell } from "../../components/MedplumAppShell/medplumappshell";
 import { medplum } from "@/libs/medplumClient";
 import { parseClientCookies } from "@/libs/cookies";
 import { DOCUMENT_TYPES, LOINC_SYSTEM, getDocumentType } from "@/libs/documentTypes";
@@ -52,7 +52,7 @@ const PacienteDashboard = () => {
       const token = cookies.medplumAccessToken;
 
       if (!token || cookies.medplumUserRole !== "patient") {
-        router.push("/login/paciente");
+        router.push("/login");
         return;
       }
 
@@ -232,18 +232,16 @@ const PacienteDashboard = () => {
 
   if (loading) {
     return (
-      <>
-        <Header />
+      <MedplumAppShell>
         <div className="pacienteDashboard">
           <p>Cargando...</p>
         </div>
-      </>
+      </MedplumAppShell>
     );
   }
 
   return (
-    <>
-      <Header />
+    <MedplumAppShell>
       <div className="pacienteDashboard">
         {error && <div className="errorBanner">{error}</div>}
 
@@ -346,7 +344,7 @@ const PacienteDashboard = () => {
           </>
         )}
       </div>
-    </>
+    </MedplumAppShell>
   );
 };
 

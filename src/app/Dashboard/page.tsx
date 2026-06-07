@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Header from "../components/Header/header";
+import { MedplumAppShell } from "../components/MedplumAppShell/medplumappshell";
 import { medplum } from "@/libs/medplumClient";
 import { parseClientCookies } from "@/libs/cookies";
 import "./dashboard.css";
@@ -24,7 +24,7 @@ const Dashboard = () => {
       const accessToken = cookies.medplumAccessToken;
 
       if (!accessToken) {
-        router.push("/login/profesional");
+        router.push("/login");
         return;
       }
 
@@ -60,8 +60,7 @@ const Dashboard = () => {
   };
 
   return (
-    <>
-      <Header />
+    <MedplumAppShell>
       <div className="dashboard">
         <ResourceSheet
           patients={patients}
@@ -75,7 +74,7 @@ const Dashboard = () => {
         </div>
         <VoiceRecorder selectedPatient={selectedPatient} onRecordingComplete={handleRecordingComplete} />
       </div>
-    </>
+    </MedplumAppShell>
   );
 };
 

@@ -1,13 +1,9 @@
 "use client";
-import React from "react";
-import Header from "../../components/Header/header";
-import MedplumSignIn from "../../components/MedplumSignIn/medplumsignin";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function LoginProfesional(): JSX.Element {
-  return (
-    <main className="container">
-      <Header />
-      <MedplumSignIn titulo="Acceso Profesionales" expectedRole="professional" />
-    </main>
-  );
+export default function RedirectToLogin() {
+  const router = useRouter();
+  useEffect(() => { router.replace("/login"); }, [router]);
+  return null;
 }

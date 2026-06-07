@@ -3,13 +3,14 @@ import { IBM_Plex_Sans } from "next/font/google";
 import { ThemeProvider } from "./components/ThemeProviders";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import "@medplum/react/dist/esm/index.css";
 import "./globals.css";
 
-const inter = IBM_Plex_Sans({ weight: "400", subsets: ["latin"] });
+const ibmPlex = IBM_Plex_Sans({ weight: ["400", "500", "600"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Agente-Archivos",
-  description: "Post visit summarizer for physicians and patients",
+  title: "EPA Bienestar IA",
+  description: "Portal de documentos médicos",
 };
 
 export default function RootLayout({
@@ -19,8 +20,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className || ""}>
-        <ThemeProvider defaultTheme="root">{children}</ThemeProvider>
+      <body className={ibmPlex.className}>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
