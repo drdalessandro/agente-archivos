@@ -41,8 +41,8 @@ export default function LoginPage() {
       <div className="loginCard">
         <div className="loginHeader">
           <Logo size={48} />
-          <h1 className="loginTitle">EPA Bienestar IA</h1>
-          <p className="loginSubtitle">Portal de documentos médicos</p>
+          <h1 className="loginTitle">Proyecto Favaloro</h1>
+          <p className="loginSubtitle">Medplum Argentina · Portal de documentos médicos</p>
         </div>
         <SignInForm
           projectId={PROJECT_ID}

@@ -25,7 +25,7 @@ export default function Header(): JSX.Element {
     <nav className="navbar">
       <div className="navbar-left">
         <Logo size={32} />
-        <h3 className="logoText">Archivos</h3>
+        <h3 className="logoText">Proyecto Favaloro</h3>
       </div>
       <div className="navbar-right">
         <Link className="common" href="/">
